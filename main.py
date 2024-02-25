@@ -26,9 +26,19 @@ class Student:
         return result
 
     def arithmetic_mean(self, student):
-        for count in student.grades:
-            self.mean_grades += sum(self.grades[count])
-        self.mean_grades /= len(self.grades)
+        for course in student.grades:
+            if course in self.grades:
+                self.mean_grades += sum(student.grades[course]) / len(student.grades[course])
+        self.mean_grades /= len(student.grades)
+
+    def __eq__(self, other):
+        return self.mean_grades == best_student_1.mean_grades
+
+    def __gt__(self, other):
+        return self.mean_grades > best_student_1.mean_grades
+
+    def __lt__(self, other):
+        return self.mean_grades < best_student_1.mean_grades
 
 
 class Mentor:
@@ -71,6 +81,51 @@ class Lecturer(Mentor):
         for count in lecturer.course_grades:
             self.mean_grades += sum(lecturer.course_grades[count]) / len(lecturer.course_grades[count])
 
+    def __eq__(self, other):
+        return self.mean_grades == lecturer_mentor_1.mean_grades
+
+    def __gt__(self, other):
+        return self.mean_grades > lecturer_mentor_1.mean_grades
+
+    def __lt__(self, other):
+        return self.mean_grades < lecturer_mentor_1.mean_grades
+
+
+def ar_student(student_list, courses):
+    acg = {}
+    for student in student_list:
+        if isinstance(student, Student):
+            for course in courses:
+                if course in acg:
+                    for count in student.grades:
+                        if count == course:
+                            acg[course] += student.grades[course]
+                else:
+                    for count in student.grades:
+                        if count == course:
+                            acg[course] = student.grades[course]
+    for key, value in acg.items():
+        acg[key] = sum(value) / len(value)
+    return acg
+
+
+def ar_lecturer(lecturer_list, courses):
+    agfl = {}
+    for lecturer in lecturer_list:
+        if isinstance(lecturer, Lecturer):
+            for course in courses:
+                if course in agfl:
+                    for count in lecturer.course_grades:
+                        if count == course:
+                            agfl[course] += lecturer.course_grades[course]
+                else:
+                    for count in lecturer.course_grades:
+                        if count == course:
+                            agfl[course] = lecturer.course_grades[course]
+    for key, value in agfl.items():
+        agfl[key] = sum(value) / len(value)
+    return agfl
+
 
 best_student_1 = Student('Roy', 'Eman', 'your_gender')
 best_student_2 = Student('Ivan', 'Ivanov', 'your_gender')
@@ -89,10 +144,14 @@ lecturer_mentor_1.courses_attached += ['Введение в программир
 lecturer_mentor_2 = Lecturer('Stepan', 'Abramov')
 lecturer_mentor_2.courses_attached += ['Python']
 
-reviewer_mentor_1.rate_hw(best_student_1, 'Python', 10)
-reviewer_mentor_1.rate_hw(best_student_2, 'Python', 8)
-reviewer_mentor_2.rate_hw(best_student_1, 'Git', 10)
-reviewer_mentor_2.rate_hw(best_student_2, 'Git', 9)
+reviewer_mentor_1.rate_hw(best_student_1, 'Python', 1)
+reviewer_mentor_1.rate_hw(best_student_1, 'Python', 2)
+reviewer_mentor_1.rate_hw(best_student_2, 'Python', 3)
+reviewer_mentor_1.rate_hw(best_student_2, 'Python', 4)
+reviewer_mentor_2.rate_hw(best_student_1, 'Git', 5)
+reviewer_mentor_2.rate_hw(best_student_1, 'Git', 6)
+reviewer_mentor_2.rate_hw(best_student_2, 'Git', 7)
+reviewer_mentor_2.rate_hw(best_student_2, 'Git', 8)
 
 best_student_1.course_rate(lecturer_mentor_1, 'Введение в программирование', 10)
 best_student_2.course_rate(lecturer_mentor_1, 'Введение в программирование', 9)
@@ -105,7 +164,6 @@ lecturer_mentor_2.arithmetic_mean(lecturer_mentor_2)
 best_student_1.arithmetic_mean(best_student_1)
 best_student_2.arithmetic_mean(best_student_2)
 
-
 print(lecturer_mentor_1.course_grades)
 print(lecturer_mentor_2.course_grades)
 print()
@@ -115,17 +173,6 @@ print(f'{reviewer_mentor_1}\n\n{reviewer_mentor_2}')
 print()
 print(f'{lecturer_mentor_1}\n\n{lecturer_mentor_2}')
 print()
-
-if lecturer_mentor_1.mean_grades > lecturer_mentor_2.mean_grades:
-    print(f'Лектор с наивысшим-средним баллом:\n'
-          f'{lecturer_mentor_1}')
-else:
-    print(f'{lecturer_mentor_2}')
-
+print(ar_student([best_student_1, best_student_2], ['Python', 'Git']))
 print()
-
-if best_student_1.mean_grades > best_student_2.mean_grades:
-    print(f'Студент с наивысшим-средним баллом:\n'
-          f'{best_student_1}')
-else:
-    print(f'{best_student_2}')
+print(ar_lecturer([lecturer_mentor_1, lecturer_mentor_2], ['Введение в программирование', 'Python']))
